@@ -3,6 +3,7 @@ import cv2
 import math
 import copy
 import time
+
 cap = cv2.VideoCapture('b1.webm',0)
 
 ret1, framePrec = cap.read()
@@ -34,7 +35,6 @@ while(cap.isOpened()):
     im2, contours, hierarchy = cv2.findContours(grayOuvert.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     for c in contours:
         (x, y, w, h) = cv2.boundingRect(c)
-        print ("%d,%d,%d,%d" %(x,y,w,h))
         cv2.rectangle(frameAffiche, (x, y), (x + w, y + h), (150,150,150), 2)
 
     cv2.imshow('frame',frameAffiche)

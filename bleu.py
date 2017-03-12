@@ -11,7 +11,8 @@ while(cap.isOpened()):
     ret, frame = cap.read()
 
 
-    frame2 = cv2.absdiff(frame, frameVide)
+    #frame2 = cv2.absdiff(frame, frameVide)
+    frame2 = abs(frame - frameVide)
     gray = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
 
     cv2.imshow('frame',frame2)
