@@ -23,7 +23,7 @@ while(cap.isOpened()):
     ret, gray = cv2.threshold(gray,0,255,cv2.THRESH_BINARY)
     grayMin = np.minimum(gray,grayPrec1)
     grayMin = np.minimum(grayMin,grayPrec2)
-    grayMin = np.minimum(grayMin,grayPrec3)
+    grayMin = np.minimum(grayMin,grayPrec3 )
     grayMin = np.minimum(grayMin,grayPrec4)
     grayMin = grayMin.astype(np.uint8)
     kernel1 = np.ones((5,5), np.uint8)
@@ -40,9 +40,6 @@ while(cap.isOpened()):
     cv2.imshow('frame',frameAffiche)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-
-
-
 
     grayPrec4 = copy.deepcopy(grayPrec3)
     grayPrec3 = copy.deepcopy(grayPrec2)
