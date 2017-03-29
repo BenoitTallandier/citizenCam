@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import math
 import copy
-import time 
+import time
 from xml.dom.minidom import Document
 
 cap = cv2.VideoCapture('b1.webm',0)
@@ -52,11 +52,11 @@ while(cap.isOpened()):
         posH = doc.createElement("h")
         posH.appendChild(doc.createTextNode(str(h)))
         rectXml.appendChild(posH)
-        
+
         color = doc.createElement("color")
-        color.appendChild(doc.createTextNode("red"))
+        color.appendChild(doc.createTextNode("rouge"))
         rectXml.appendChild(color)
-        
+
         frameXml.appendChild(rectXml)
 
     result.appendChild(frameXml)
