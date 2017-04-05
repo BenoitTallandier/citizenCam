@@ -105,5 +105,3 @@ for (x,y) in liste:
 docu = open("result.xml","wb")
 result.writexml(docu)
 docu.close()
-
-print liste

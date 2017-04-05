@@ -46,12 +46,10 @@ while(cap.isOpened() ):
 
     cv2.imshow('frame',frame)
 
-    k=cv2.waitKey(1)
+    k=cv2.waitKey()
     if k == 27:
         retour = True
     if k == ord('q'):
         break
-
-    time.sleep(0.1)
 cap.release()
 cv2.destroyAllWindows()
