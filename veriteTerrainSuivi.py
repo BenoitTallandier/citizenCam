@@ -28,6 +28,7 @@ def draw(event,x,y,flags,param):
         global xMouse
         global yMouse
         xMouse,yMouse = x,y
+
         #print xMouse,yMouse
 
 liste = []
@@ -40,15 +41,31 @@ k = cv2.waitKey(0)
 print k
 timer = 0.125;
 compteur = 0
+doc = Document()
+doc = parse('result.xml')
+framesXml = doc.getElementsByTagName("frame")
+result = doc.getElementsByTagName("result")[0]
+totalFrameXml = len(framesXml)
+compteur = 0;
+stop = False
 while(cap.isOpened() ):
     ret, frame = cap.read()
     frequence = 1/timer
     message = "frame : %d; img/s : %d, rec : %r" %(compteur,frequence,isOnScreen)
+    if compteur<totalFrameXml:
+        for rect in framesXml[compteur].getElementsByTagName("point"):
+            xr = int(rect.getElementsByTagName("x")[0].firstChild.nodeValue)
+            yr = int(rect.getElementsByTagName("y")[0].firstChild.nodeValue)
+            color = rect.getElementsByTagName("color")[0].firstChild.nodeValue
+            if color=="red":
+                cv2.circle(frame,(xr,yr),15,(0,0,100),-1)
+            else:
+                cv2.circle(frame,(xr,yr),15,(0,100,0),-1)
     if isOnScreen :
         cv2.putText(frame,message,(25,25),0,0.7,(0,0,255),)
     else:
         cv2.putText(frame,message,(25,25),0,0.7,(0,125,0))
-    cv2.imshow('frame',frame)
+    #cv2.imshow('frame',frame)
     k=cv2.waitKey(1)
     if k == 32:
         isOnScreen = not(isOnScreen)
@@ -62,46 +79,57 @@ while(cap.isOpened() ):
         space = cv2.waitKey(0)
         while( space != 10):
             space = cv2.waitKey(0)
+    elif k == ord('z'):
+        stop = True
+        break
     elif k == ord('q'):
         break
 
+    #cv2.imshow('frame',frame)
 
-    cv2.imshow('frame',frame)
-
-    time.sleep(timer)
     if isOnScreen:
         liste.append((xMouse,yMouse))
+        cv2.circle(frame,(xMouse,yMouse),5,(255,0,0),-1)
+
     else :
         liste.append((-1,-1))
     compteur = compteur +1
+    cv2.imshow('frame',frame)
+    time.sleep(timer)
+
 
 cap.release()
 cv2.destroyAllWindows()
-doc = Document()
-result = doc.createElement("result")
-compteur = 0;
-for (x,y) in liste:
-    frameXml = doc.createElement("frame")
-    frameXml.setAttribute("num", str(compteur))
-    if (x,y) != (-1,-1):
-        ptXml = doc.createElement("point")
+compteur = 0
+if stop==False:
+    print("Nombre de frame : %d"%totalFrameXml)
+    for (x,y) in liste:
+        f=[node for node in framesXml if node.attributes["num"].value == str(compteur)]
+        if len(f)>0:
+            f = f[0]
+        else:
+            f = doc.createElement("frame")
+            f.setAttribute("num", str(compteur))
 
-        posX = doc.createElement("x")
-        posX.appendChild(doc.createTextNode(str(x)))
-        ptXml.appendChild(posX)
+        if (x,y) != (-1,-1):
+            ptXml = doc.createElement("point")
 
-        posY = doc.createElement("y")
-        posY.appendChild(doc.createTextNode(str(y)))
-        ptXml.appendChild(posY)
+            posX = doc.createElement("x")
+            posX.appendChild(doc.createTextNode(str(x)))
+            ptXml.appendChild(posX)
 
-        color = doc.createElement("color")
-        color.appendChild(doc.createTextNode("red"))
-        ptXml.appendChild(color)
+            posY = doc.createElement("y")
+            posY.appendChild(doc.createTextNode(str(y)))
+            ptXml.appendChild(posY)
 
-        frameXml.appendChild(ptXml)
-    result.appendChild(frameXml)
-    compteur = compteur + 1
+            color = doc.createElement("color")
+            color.appendChild(doc.createTextNode("white"))
+            ptXml.appendChild(color)
+        f.appendChild(ptXml)
+        if compteur>= totalFrameXml:
+            result.appendChild(f)
+        compteur = compteur + 1
 
-docu = open("result.xml","wb")
-result.writexml(docu)
-docu.close()
+    docu = open("result.xml","wb")
+    result.writexml(docu)
+    docu.close()
